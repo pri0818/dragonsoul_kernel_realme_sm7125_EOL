@@ -300,8 +300,7 @@ static void mark_idle(struct zram *zram, ktime_t cutoff)
         int is_idle = 1;
 	unsigned long nr_pages = zram->disksize >> PAGE_SHIFT;
 	int index;
-	char mode_buf[8];
-	ssize_t sz;
+
 	for (index = 0; index < nr_pages; index++) {
 		/*
 		 * Do not mark ZRAM_UNDER_WB slot as ZRAM_IDLE to close race.
@@ -1962,14 +1961,12 @@ static int zram_open(struct block_device *bdev, fmode_t mode)
 	return ret;
 }
 
-#ifdef CONFIG_ZRAM_WRITEBACK
 static const struct block_device_operations zram_devops = {
 	.open = zram_open,
 	.swap_slot_free_notify = zram_slot_free_notify,
 	.rw_page = zram_rw_page,
 	.owner = THIS_MODULE
 };
-#endif
 
 static DEVICE_ATTR_WO(compact);
 static DEVICE_ATTR_RW(disksize);
