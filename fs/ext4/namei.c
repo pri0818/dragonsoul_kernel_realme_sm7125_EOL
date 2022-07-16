@@ -1940,7 +1940,7 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 			     blocksize, hinfo, map);
 	map -= count;
 	dx_sort_map(map, count);
-	/* Split the existing block in the middle, size-wise */
+	/* Ensure that neither split block is over half full */
 	size = 0;
 	move = 0;
 	for (i = count-1; i >= 0; i--) {
@@ -1950,8 +1950,18 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 		size += map[i].size;
 		move++;
 	}
-	/* map index at which we will split */
-	split = count - move;
+	/*
+	 * map index at which we will split
+	 *
+	 * If the sum of active entries didn't exceed half the block size, just
+	 * split it in half by count; each resulting block will have at least
+	 * half the space free.
+	 */
+	if (i > 0)
+		split = count - move;
+	else
+		split = count/2;
+
 	hash2 = map[split].hash;
 	continued = hash2 == map[split - 1].hash;
 	dxtrace(printk(KERN_INFO "Split block %lu at %x, %i/%i\n",
@@ -3839,6 +3849,7 @@ static int ext4_rename(struct inode *old_dir, struct dentry *old_dentry,
 	if (!old.bh || le32_to_cpu(old.de->inode) != old.inode->i_ino)
 		goto end_rename;
 
+
 	new.bh = ext4_find_entry(new.dir, &new.dentry->d_name,
 				 &new.de, &new.inlined, NULL);
 	if (IS_ERR(new.bh)) {
@@ -4003,6 +4014,7 @@ static int ext4_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 	u8 new_file_type;
 	int retval;
 	struct timespec ctime;
+
 
 	if ((ext4_test_inode_flag(new_dir, EXT4_INODE_PROJINHERIT) &&
 	     !projid_eq(EXT4_I(new_dir)->i_projid,
