@@ -1,5 +1,5 @@
 /* Copyright (c) 2013-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
  * only version 2 as published by the Free Software Foundation.
@@ -1125,8 +1125,7 @@ static inline bool _verify_ib(struct kgsl_device_private *dev_priv,
 	}
 
 	/* Make sure that the address is mapped */
-	if (!kgsl_mmu_gpuaddr_in_range(private->pagetable, ib->gpuaddr,
-		ib->size)) {
+	if (!kgsl_mmu_gpuaddr_in_range(private->pagetable, ib->gpuaddr)) {
 		pr_context(device, context, "ctxt %d invalid ib gpuaddr %llX\n",
 			context->id, ib->gpuaddr);
 		return false;
@@ -2427,10 +2426,6 @@ static int adreno_dispatch_process_drawqueue(struct adreno_device *adreno_dev,
 			msecs_to_jiffies(adreno_drawobj_timeout);
 		return count;
 	}
-
-	/* Don't check timeout if we are still in middle of preemption */
-	if (!adreno_in_preempt_state(adreno_dev, ADRENO_PREEMPT_NONE))
-		return 0;
 
 	/*
 	 * If we get here then 1) the ringbuffer is current and 2) we haven't
