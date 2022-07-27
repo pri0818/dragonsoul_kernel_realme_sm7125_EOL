@@ -1,5 +1,5 @@
 config OPLUS_FEATURE_UIFIRST
 	tristate "uifirst"
-	default n
+	default y
 	help
 	  turning sched for ui, render and so on to improve UX
