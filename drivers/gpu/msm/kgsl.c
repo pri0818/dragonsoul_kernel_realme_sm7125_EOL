@@ -4744,12 +4744,6 @@ kgsl_get_unmapped_area(struct file *file, unsigned long addr,
 					       "_get_svm_area: pid %d addr %lx pgoff %lx len %ld failed error %d\n",
 					       private->pid, addr, pgoff, len,
 					       (int) val);
-#if defined(OPLUS_FEATURE_VIRTUAL_RESERVE_MEMORY) && defined(CONFIG_VIRTUAL_RESERVE_MEMORY)
-		/* 
-		 * record the process pid and svm_oom happend jiffies
-		 */
-		record_svm_oom_info(val);
-#endif
 	}
 	kgsl_mem_entry_put(entry);
 	return val;
