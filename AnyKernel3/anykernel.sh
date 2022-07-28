@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=The fire brething Father of Dragons
+kernel.string=Speed and Smoothness beyond limits
 do.devicecheck=0
 do.modules=0
 do.systemless=0
