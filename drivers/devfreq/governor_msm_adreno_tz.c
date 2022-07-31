@@ -381,10 +381,6 @@ static inline int devfreq_get_freq_level(struct devfreq *devfreq,
 extern int adreno_idler(struct devfreq_dev_status stats, struct devfreq *devfreq,
 		 unsigned long *freq);
 #endif
-
-int highref_multiplier_get = CONFIG_DEVFREQ_ADRENO_HIGHREFRESH_MULTI;
-module_param(highref_multiplier_get, uint, 0644);
-
 static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 {
 	int result = 0;
@@ -455,10 +451,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 		scm_data[0] = level;
 		scm_data[1] = priv->bin.total_time;
 		if (refresh_rate > 60)
-			if (likely(highref_multiplier_get != 0))
-				scm_data[2] = priv->bin.busy_time * highref_multiplier_get / 100;
-			else
-				scm_data[2] = priv->bin.busy_time * refresh_rate / 60;
+			scm_data[2] = priv->bin.busy_time * refresh_rate / 60;
 		else
 			scm_data[2] = priv->bin.busy_time;
 		scm_data[3] = context_count;
