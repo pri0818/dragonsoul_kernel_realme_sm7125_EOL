@@ -5,7 +5,7 @@
 # begin properties
 properties() { '
 kernel.string=Speed and Smoothness beyond limits
-do.devicecheck=0
+do.devicecheck=1
 do.modules=0
 do.systemless=0
 do.cleanup=1
