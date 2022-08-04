@@ -95,6 +95,7 @@
 #include <linux/cpufreq_times.h>
 #include <linux/scs.h>
 #include <linux/devfreq_boost.h>
+#include <linux/cpu_input_boost.h>
 
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
@@ -2276,8 +2277,10 @@ long _do_fork(unsigned long clone_flags,
 	   */
 	  if (kp_active_mode() == 3 || kp_active_mode() == 0) {
 	    devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 50);
+	    devfreq_boost_kick_max(DEVFREQ_CPU_CPU_LLC_BW, 50);	    
 	  } else if (kp_active_mode() == 2) {
 	    devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 25);
+	    devfreq_boost_kick_max(DEVFREQ_CPU_CPU_LLC_BW, 25);	    
 	  }
 	}
 
