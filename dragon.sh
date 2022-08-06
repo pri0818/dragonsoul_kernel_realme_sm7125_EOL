@@ -2,10 +2,33 @@
 
 #set -e
 
-## Copy this script inside the kernel directory
+ #
+ # Script For Building Android Kernel
+ #
+
+##----------------------------------------------------------##
+
+# Basic Information
 KERNEL_DEFCONFIG=dragonsoul_defconfig
+
+DEVICE=reatoll
+
+VERSION=SaphirA-ZX3
+
+DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%T")
+
+TANGGAL=$(date +"%F%S")
+
 ANYKERNEL3_DIR=$PWD/AnyKernel3/
-FINAL_KERNEL_ZIP=DragonSouL-SaphirA-ZX3-RMX2061-RMX2170-STABLE-$(date '+%Y%m%d').zip
+
+FINAL_KERNEL_ZIP=DragonSouL-${VERSION}-${DEVICE}-${TANGGAL}.zip
+
+# Verbose Build
+VERBOSE=0
+##----------------------------------------------------------##
+
+# Exports
+
 export PATH="$HOME/proton/bin:$PATH"
 export ARCH=arm64
 export SUBARCH=arm64
@@ -22,6 +45,9 @@ fi
 # Speed up build process
 MAKE="./makeparallel"
 
+##----------------------------------------------------------##
+
+# Start build
 BUILD_START=$(date +"%s")
 blue='\033[0;34m'
 cyan='\033[0;36m'
@@ -30,13 +56,18 @@ red='\033[0;31m'
 nocol='\033[0m'
 
 # Clean build always lol
-echo "**** Cleaning ****"
+echo -e "$red***********************************************"
+echo "          STARTING THE ENGINE         "
+echo -e "***********************************************$nocol"
+echo -e "$yellow***********************************************"
+echo "         CLEANING, PLEASE WAIT A BIT         "
+echo -e "***********************************************$nocol"
 mkdir -p out
 make O=out clean
 
 echo "**** Kernel defconfig is set to $KERNEL_DEFCONFIG ****"
 echo -e "$blue***********************************************"
-echo "          BUILDING KERNEL          "
+echo "          BUILDING DRAGONSOUL KERNEL          "
 echo -e "***********************************************$nocol"
 make $KERNEL_DEFCONFIG O=out
 make -j$(nproc --all) O=out \
@@ -47,12 +78,32 @@ make -j$(nproc --all) O=out \
                       NM=llvm-nm \
                       OBJCOPY=llvm-objcopy \
                       OBJDUMP=llvm-objdump \
-                      STRIP=llvm-strip
+                      STRIP=llvm-strip \
+			          V=$VERBOSE 2>&1 | tee error.log                      
+
+##----------------------------------------------------------##
+
+# Verify Files
 
 echo "**** Verify Image.gz & dtbo.img ****"
 ls $PWD/out/arch/arm64/boot/Image.gz
 ls $PWD/out/arch/arm64/boot/dtbo.img
 ls $PWD/out/arch/arm64/boot/dtb.img
+
+       if ! [ -a "$PWD/out/arch/arm64/boot/Image.gz" ];
+          then
+              echo -e "$blue***********************************************"
+              echo "          BUILD THROWS ERRORS         "
+              echo -e "***********************************************$nocol"
+              rm -rf out/
+              exit 1
+          else
+             echo -e "$blue***********************************************"
+             echo "    KERNEL COMPILATION FINISHED, STARTING ZIPPING         "
+             echo -e "***********************************************$nocol"
+       fi
+
+##----------------------------------------------------------##
 
 # Anykernel 3 time!!
 echo "**** Verifying AnyKernel3 Directory ****"
@@ -68,11 +119,15 @@ cp $PWD/out/arch/arm64/boot/Image.gz $ANYKERNEL3_DIR/
 cp $PWD/out/arch/arm64/boot/dtbo.img $ANYKERNEL3_DIR/
 cp $PWD/out/arch/arm64/boot/dtb.img $ANYKERNEL3_DIR/
 
-echo "**** Time to zip up! ****"
+echo -e "$cyan***********************************************"
+echo "          Time to zip up!          "
+echo -e "***********************************************$nocol"
 cd $ANYKERNEL3_DIR/
 zip -r9 "../$FINAL_KERNEL_ZIP" * -x README $FINAL_KERNEL_ZIP
 
-echo "**** Done, here is your sha1 ****"
+echo -e "$yellow***********************************************"
+echo "         Done, here is your sha1         "
+echo -e "***********************************************$nocol"
 cd ..
 rm -rf $ANYKERNEL3_DIR/$FINAL_KERNEL_ZIP
 rm -rf $ANYKERNEL3_DIR/Image.gz
@@ -82,7 +137,14 @@ rm -rf out/
 
 sha1sum $FINAL_KERNEL_ZIP
 
+##----------------------------------------------------------##
+##----------------------------------------------------------##
+##----------------------------------------------------------##
+
 BUILD_END=$(date +"%s")
 DIFF=$(($BUILD_END - $BUILD_START))
 echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nocol"
 
+##----------------------------------------------------------##
+##----------------------------------------------------------##
+##----------------------------------------------------------##
