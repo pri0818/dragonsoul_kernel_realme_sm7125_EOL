@@ -35,13 +35,6 @@ set_perm_recursive 0 0 750 750 $ramdisk/init* $ramdisk/sbin;
 # Optimize F2FS extension list (@arter97)
 if mountpoint -q /data; then
   for list_path in $(find /sys/fs/f2fs* -name extension_list); do
-    hash="$(md5sum $list_path | sed 's/extenstion/extension/g' | cut -d' ' -f1)"
-
-    # Skip update if our list is already active
-    if [[ $hash == "43df40d20dcb96aa7e8af0e3d557d086" ]]; then
-      echo "Extension list up-to-date: $list_path"
-      continue
-    fi
 
     ui_print "Optimizing F2FS extension list.."
     echo "Updating extension list: $list_path"
