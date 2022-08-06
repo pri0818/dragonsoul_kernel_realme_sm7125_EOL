@@ -101,6 +101,7 @@ ls $PWD/out/arch/arm64/boot/dtb.img
              echo -e "$blue***********************************************"
              echo "    KERNEL COMPILATION FINISHED, STARTING ZIPPING         "
              echo -e "***********************************************$nocol"
+             rm -rf error.log 
        fi
 
 ##----------------------------------------------------------##
