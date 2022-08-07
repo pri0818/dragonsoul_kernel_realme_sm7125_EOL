@@ -96,6 +96,11 @@ ls $PWD/out/arch/arm64/boot/dtb.img
               echo "          BUILD THROWS ERRORS         "
               echo -e "***********************************************$nocol"
               rm -rf out/
+              for i in *.log
+              do
+              curl -F "document=@$i" --form-string "caption=" "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument?chat_id=${CHAT_ID}&parse_mode=HTML"
+              done
+              rm -rf error.log
               exit 1
           else
              echo -e "$blue***********************************************"
@@ -149,6 +154,10 @@ echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)
 ##----------------------------------------------------------##
 ##----------------------------------------------------------##
 ##----------------------------------------------------------##
+
+echo -e "$red***********************************************"
+echo "         Uploading to telegram         "
+echo -e "***********************************************$nocol"
 
 # Upload Time!!
 for i in *.zip
