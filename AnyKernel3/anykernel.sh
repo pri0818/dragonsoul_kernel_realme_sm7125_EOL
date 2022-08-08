@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=Speed and Smoothness beyond limits
+kernel.string=Fluidness OverLoaded
 do.devicecheck=1
 do.modules=0
 do.systemless=0
