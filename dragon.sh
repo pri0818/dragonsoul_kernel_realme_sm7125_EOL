@@ -13,7 +13,7 @@ KERNEL_DEFCONFIG=dragonsoul_defconfig
 
 DEVICE=reatoll
 
-VERSION=SaphirA-ZX3-FLUID
+VERSION=SaphirA-ZX3.1-FLUID
 
 DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%T")
 
