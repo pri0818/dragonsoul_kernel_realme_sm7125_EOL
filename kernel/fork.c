@@ -2273,16 +2273,20 @@ long _do_fork(unsigned long clone_flags,
 	if (task_is_zygote(current)) {
 	  /*
 	   * Dont boost CPU & DDR if battery saver profile is enabled
-	   * and boost CPU & DDR for 25ms if balanced profile is enabled
+	   * and boost CPU & DDR for 15ms if balanced profile is enabled
 	   */
 	  if (kp_active_mode() == 3 || kp_active_mode() == 0) {
-	    devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 50);
-	    devfreq_boost_kick_max(DEVFREQ_CPU_CPU_LLC_BW, 50);	    
+	    cpu_input_boost_kick_max(75);	  
+	    devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 75);
+	    devfreq_boost_kick_max(DEVFREQ_CPU_CPU_LLC_BW, 75);	    
 	  } else if (kp_active_mode() == 2) {
+	    cpu_input_boost_kick_max(25);	  
 	    devfreq_boost_kick_max(DEVFREQ_CPU_LLCC_DDR_BW, 25);
 	    devfreq_boost_kick_max(DEVFREQ_CPU_CPU_LLC_BW, 25);	    
-	  }
-	}
+      } else {
+          pr_info("Battery Profile Active, Skipping Boost...\n");
+      }
+}
 
 	/*
 	 * Determine whether and which event to report to ptracer.  When
